@@ -39,7 +39,7 @@ public class PlaceEnemyState : GameState
 		while (waveNumber == 4)
 			waveNumber = Random.Range(0, 7);
 
-		switch (GM.turn % 8)
+		switch (waveNumber)
 		{
 		case 1: // small enemy
 			SpawnEnemy(GM.EnemyType.Small);
@@ -54,7 +54,6 @@ public class PlaceEnemyState : GameState
 			break;
 		case 4:
 			// impossible case, see above
-			// TODO use goto
 			break;
 		case 5:
 			SpawnEnemy(GM.EnemyType.Medium);
@@ -109,7 +108,13 @@ public class PlaceEnemyState : GameState
 
 		// enable the _openTiles tiles
 		foreach (Tile tile in _openTiles)
-			tile.enabled = true;
+		{
+			if (tile.currentToken == null)
+			{
+				tile.enabled = true;
+				tile.SetState(Tile.TileState.Yellow);
+			}
+		}
 
 		// for each token on the board, enable those as well
 		List<Tile> adjacent;
@@ -121,7 +126,13 @@ public class PlaceEnemyState : GameState
 				adjacent = token.currentTile.GetAdjacentTiles();
 
 				foreach (Tile tile in adjacent)
-					tile.enabled = true;
+				{
+					if (tile.currentToken == null)
+					{
+						tile.enabled = true;
+						tile.SetState(Tile.TileState.Yellow);
+					}
+				}
 			}
 		}
 	}
@@ -140,7 +151,10 @@ public class PlaceEnemyState : GameState
 			foreach (Tile tile in tiles)
 			{
 				if (tile.isStartTile)
+				{
 					_openTiles.Add(tile);
+					tile.SetState(Tile.TileState.Yellow);
+				}
 				tile.enabled = tile.isStartTile;
 			}
 		}
@@ -164,7 +178,10 @@ public class PlaceEnemyState : GameState
 			}
 			
 			foreach (Tile tile in _openTiles)
+			{
 				tile.enabled = true;
+				tile.SetState(Tile.TileState.Yellow);
+			}
 		}
 	}
 

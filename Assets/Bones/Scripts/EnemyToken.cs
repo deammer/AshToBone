@@ -3,6 +3,8 @@ using System.Collections;
 
 public class EnemyToken : Token
 {
+	public int damage = 1;
+
 	void Update()
 	{
 		if (BonesGame.tokenBeingDragged == this)

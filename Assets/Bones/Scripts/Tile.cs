@@ -23,9 +23,11 @@ public class Tile : MonoBehaviour
 	private SpriteRenderer _renderer;
 	private Color _originalColor;
 	private Color _disabledColor = Color.gray;
+	
+	private bool _enabled = true;
+	public new bool enabled { get { return _enabled; }
+		set { _enabled = value; if (!_enabled) SetState(TileState.Normal); } }
 
-	[HideInInspector]
-	public new bool enabled = true;
 	[HideInInspector]
 	public bool highlighted = false;
 
@@ -44,15 +46,9 @@ public class Tile : MonoBehaviour
 	void Awake()
 	{
 		currentToken = null;
-	}
 
-	void Start ()
-	{
 		_renderer = GetComponent<SpriteRenderer>();
 		_originalColor = _renderer.color;
-
-		if (isStartTile)
-			_renderer.sprite = startSprite;
 
 		// add another sprite renderer on top
 		GameObject temp = new GameObject("StateRenderer");
@@ -63,14 +59,20 @@ public class Tile : MonoBehaviour
 		_stateRenderer.sortingLayerName = _renderer.sortingLayerName;
 		_stateRenderer.sortingOrder = _renderer.sortingOrder + 1;
 	}
-	
+
+	void Start ()
+	{
+		if (isStartTile)
+			_renderer.sprite = startSprite;
+	}
+
 	void Update ()
 	{
 		Vector3 mouseLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		bool over = _renderer.bounds.Contains(new Vector3(mouseLocation.x, mouseLocation.y, transform.position.z));
 
 		// if the mouse is over && we're enabled
-		if (over && enabled)
+		if (over && _enabled)
 		{
 			_renderer.color = highlightColor;
 
@@ -97,10 +99,10 @@ public class Tile : MonoBehaviour
 				_mouseIsOver = false;
 			}
 
-			if (enabled)
+			if (_enabled)
 				_renderer.color = _originalColor;
-			else
-				_renderer.color = _disabledColor;
+//			else
+//				_renderer.color = _disabledColor;
 		}
 	}
 

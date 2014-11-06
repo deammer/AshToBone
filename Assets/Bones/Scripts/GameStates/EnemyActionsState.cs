@@ -36,7 +36,11 @@ public class EnemyActionsState : GameState
 	{
 		if (roll >= 4)
 		{
-			// TODO: damage the player
+			// damage the player
+			BonesGame.instance.counterLife.currentValue -= _enemies[_currentEnemyIndex].damage;
+
+			if (BonesGame.instance.counterLife.currentValue <= 0)
+				Application.LoadLevel("BonesGameOver");
 		}
 
 		// defend against the next enemy

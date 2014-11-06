@@ -15,32 +15,15 @@ public class PlayerActionState : GameState
 	public PlayerActionState()
 	{
 		instructions = "Move and/or attack!";
+		confirmationText = "Confirm move?";
+		_pathDrawer = BonesGame.instance.pathDrawer;
 		canSwitchWeapon = true;
 
 		// disable all the tiles
 		BonesGame.instance.SetTilesInput(false);
-		
-		// setup the tiles we can move to
-		Tile currentTile = player.currentTile;
-		
-		// setup the pathfinder
-		_pathfinder = new Pathfinder(tiles);
-		currentTile.SetState(Tile.TileState.Green);
-		currentTile.enabled = true;
-		// highlight the tiles we can move to
-		List<Tile> path;
-		foreach (Tile tile in tiles)
-		{
-			if (tile.currentToken == null && tile != currentTile)
-			{
-				path = _pathfinder.FindPath(currentTile, tile);
-				if (path.Count > 0 && path.Count <= BonesGame.instance.counterActions.currentValue)
-				{
-					tile.SetState(Tile.TileState.Green);
-					tile.enabled = true;
-				}
-			}
-		}
+
+		// display the tiles we can move to
+		DisplayMovementTiles();
 
 		// enable all the enemies
 		foreach (EnemyToken enemy in BonesGame.instance.enemies)
@@ -53,6 +36,14 @@ public class PlayerActionState : GameState
 		// if the tile can be moved to, switch to Movement state
 		if (tile.currentToken == null)
 		{
+			// deselect the current enemy, if any
+			if (_selectedEnemy != null)
+			{
+				_selectedEnemy.Deselect();
+				_selectedEnemy = null;
+				diceWindow.gameObject.SetActive(false);
+			}
+
 			Tile currentTile = player.currentTile;
 			if (currentTile == tile)
 			{
@@ -89,6 +80,9 @@ public class PlayerActionState : GameState
 		// clear the pathdrawer
 		_pathDrawer.Clear();
 
+		if (BonesGame.instance.counterActions.currentValue > 0)
+			DisplayMovementTiles();
+
 		// check the number of actions remaining
 		CheckForNextState();
 	}
@@ -101,16 +95,53 @@ public class PlayerActionState : GameState
 		
 		_pathDrawer.Clear();
 	}
+
+	// show the tiles we can move to
+	private void DisplayMovementTiles()
+	{
+		// setup the tiles we can move to
+		Tile currentTile = player.currentTile;
+
+		// setup the pathfinder
+		_pathfinder = new Pathfinder(tiles);
+		currentTile.SetState(Tile.TileState.Green);
+		currentTile.enabled = true;
+		// highlight the tiles we can move to
+		List<Tile> path;
+		foreach (Tile tile in tiles)
+		{
+			if (tile.currentToken == null && tile != currentTile)
+			{
+				path = _pathfinder.FindPath(currentTile, tile);
+				if (path.Count > 0 && path.Count <= BonesGame.instance.counterActions.currentValue)
+				{
+					tile.SetState(Tile.TileState.Green);
+					tile.enabled = true;
+				}
+			}
+		}
+	}
 	#endregion Movement
 
 	#region Attacking
 	public override void OnEnemyClicked (EnemyToken enemy)
 	{
+		// cancel path, if any
+		CancelDecision();
+
 		// TODO some UI work for enemies we can't attack
 
 		// deselect the currently-selected enemy
 		if (_selectedEnemy != null)
+		{
 			_selectedEnemy.Deselect();
+			if (_selectedEnemy == enemy)
+			{
+				diceWindow.gameObject.SetActive(false);
+				_selectedEnemy = null;
+				return;
+			}
+		}
 		
 		_selectedEnemy = enemy;
 		_selectedEnemy.Select();
@@ -142,7 +173,7 @@ public class PlayerActionState : GameState
 					_selectedEnemy = null;
 					
 					// hide the roll window
-					diceWindow.gameObject.SetActive(true);
+					diceWindow.gameObject.SetActive(false);
 				}
 			}
 			

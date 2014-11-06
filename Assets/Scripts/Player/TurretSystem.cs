@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 [System.Serializable]
 public class ProjectileProperties
@@ -12,6 +14,7 @@ public class ProjectileProperties
 	public int speed = 20;
 }
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(TurretSystem))]
 public class TurretEditor : Editor
 {
@@ -29,6 +32,7 @@ public class TurretEditor : Editor
 		}
 	}
 }
+#endif
 
 public class TurretSystem : MonoBehaviour
 {

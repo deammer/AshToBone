@@ -51,6 +51,8 @@ public class BonesGame : MonoBehaviour
 	public void DiceRolled(int roll) { _gameState.OnDiceRoll(roll); }
 	public void OnEnemyClicked(EnemyToken token) { _gameState.OnEnemyClicked(token); }
 
+	private Vector3 _originalCameraPos;
+
 	void Start ()
 	{
 		// init singleton
@@ -59,6 +61,7 @@ public class BonesGame : MonoBehaviour
 		// cache some stuffs
 		_weaponBox = GameObject.Find ("WeaponBox").GetComponent<WeaponSelection>();
 		_weaponBox.gameObject.SetActive(false);
+		_originalCameraPos = Camera.main.transform.position;
 
 		CreateBoard();
 
@@ -268,8 +271,20 @@ public class BonesGame : MonoBehaviour
 			GUI.DrawTexture(rect, playerToken.GetComponent<PlayerToken>().weapon.icon);
 			if (GUI.Button(rect, "Toggle\nWeapon\nSelection"))
 			{
-				_weaponBox.gameObject.SetActive(!_weaponBox.gameObject.activeInHierarchy);
-				_weaponBox.Reset();
+				if (Camera.main.transform.position == _originalCameraPos)
+				{
+					_weaponBox.Reset();
+					Vector3 position = _originalCameraPos;
+					position.x = _weaponBox.transform.position.x;
+					position.y = _weaponBox.transform.position.y;
+					Camera.main.transform.position = position;
+					_weaponBox.gameObject.SetActive(true);
+				}
+				else
+				{
+					Camera.main.transform.position = _originalCameraPos;
+					_weaponBox.gameObject.SetActive(false);
+				}
 			}
 		}
 

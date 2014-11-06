@@ -76,8 +76,10 @@ public class PathDrawer : MonoBehaviour
 			bend.transform.parent = transform;
 			bend.AddComponent<SpriteRenderer>();
 			bend.GetComponent<SpriteRenderer>().sprite = arrowBend;
+			bend.GetComponent<SpriteRenderer>().sortingOrder = 1;
 			_arrowBends.Add(bend);
 		}
+
 		while (_arrowBends.Count >= _links.Count)
 		{
 			Destroy(_arrowBends[_arrowBends.Count - 1]);
