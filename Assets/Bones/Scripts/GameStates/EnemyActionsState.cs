@@ -59,7 +59,7 @@ public class EnemyActionsState : GameState
 	{
 		if (_turnOver && GUI.Button(new Rect(Screen.width * .4f, Screen.height * .4f, Screen.width * .2f, Screen.height * .2f), "Continue"))
 		{
-			BonesGame.instance.SwitchState(BonesGame.State.PlaceEnemy);
+			BonesGame.instance.SwitchState(BonesGame.State.BeginNewTurn);
 		}
 	}
 }

@@ -31,6 +31,7 @@ public class EnemyToken : Token
 			transform.localScale = new Vector3(1.2f, 1.2f, 1f);
 			BonesGame.tokenBeingDragged = this;
 			_lastPosition = transform.position;
+			OnStartDrag();
 		}
 	}
 	
@@ -43,7 +44,7 @@ public class EnemyToken : Token
 			BonesGame.tokenBeingDragged = null;
 			
 			Tile newTile = BonesGame.GetTileAt(transform.position);
-			if (newTile == null || !newTile.enabled)
+			if (newTile == null || !newTile.enabled || newTile.currentToken != null)
 				transform.position = _lastPosition;
 			else
 				OnDropped(newTile);

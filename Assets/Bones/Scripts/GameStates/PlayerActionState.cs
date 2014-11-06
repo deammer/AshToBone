@@ -17,6 +17,10 @@ public class PlayerActionState : GameState
 
 	override public void OnEnemyClicked(EnemyToken enemy)
 	{
+		// deselect the currently-selected enemy
+		if (_selectedEnemy != null)
+			_selectedEnemy.Deselect();
+
 		_selectedEnemy = enemy;
 		_selectedEnemy.Select();
 
@@ -45,6 +49,9 @@ public class PlayerActionState : GameState
 					BonesGame.instance.enemies.Remove(_selectedEnemy);
 					GameObject.Destroy(_selectedEnemy.gameObject);
 					_selectedEnemy = null;
+
+					// hide the roll window
+					diceWindow.gameObject.SetActive(true);
 				}
 			}
 

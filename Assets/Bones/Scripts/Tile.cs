@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Tile : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Tile : MonoBehaviour
 
 	public Sprite startSprite;
 	[HideInInspector]
-	public bool isStartSprite = true;
+	public bool isStartTile = true;
 
 	[HideInInspector]
 	public Token currentToken;
@@ -50,7 +51,7 @@ public class Tile : MonoBehaviour
 		_renderer = GetComponent<SpriteRenderer>();
 		_originalColor = _renderer.color;
 
-		if (isStartSprite)
+		if (isStartTile)
 			_renderer.sprite = startSprite;
 
 		// add another sprite renderer on top
@@ -122,6 +123,31 @@ public class Tile : MonoBehaviour
 			_stateRenderer.sprite = null;
 			break;
 		}
+	}
+
+	public List<Tile> GetAdjacentTiles()
+	{
+		int columns = BonesGame.tiles.GetLength(0);
+		int rows = BonesGame.tiles.GetLength(1);
+
+		List<Tile> tiles = new List<Tile>();
+		if (column >= 1) tiles.Add(BonesGame.tiles[column - 1, row]);
+		if (column < columns - 1) tiles.Add(BonesGame.tiles[column + 1, row]);
+		if (row >= 1) tiles.Add(BonesGame.tiles[column, row - 1]);
+		if (row < rows - 1) tiles.Add(BonesGame.tiles[column, row + 1]);
+
+		return tiles;
+	}
+
+	public List<Token> GetAdjacentTokens()
+	{
+		List<Tile> adjacent = GetAdjacentTiles();
+		List<Token> tokens = new List<Token>();
+
+		foreach (Tile tile in adjacent)
+			if (tile.currentToken != null)
+				tokens.Add(tile.currentToken);
+		return tokens;
 	}
 
 	void OnGUI()

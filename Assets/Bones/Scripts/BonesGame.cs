@@ -4,14 +4,13 @@ using System.Collections.Generic;
 
 public class BonesGame : MonoBehaviour
 {
-	// grosssss
+	// singletonning
 	public static BonesGame instance;
 
 	// game flow
-	public enum State { PlayerAction, PlayerMovement, PlaceEnemy, WaitForPlayerAction, EndPlayerTurn, EnemyActions };
+	public enum State { PlayerAction, PlayerMovement, PlaceEnemy, WaitForPlayerAction, EndPlayerTurn, EnemyActions, BeginNewTurn };
 	private State _state;
 	private GameState _gameState;
-	private int _currentTurn;
 	private ConfirmationDialog _confirmDialog;
 
 	// game UI
@@ -19,6 +18,7 @@ public class BonesGame : MonoBehaviour
 	public Counter counterFavor;
 	public Counter counterActions;
 	public GameObject diceRollWindow;
+	private WeaponSelection _weaponBox;
 
 	// pathfinding
 	private Pathfinder _pathfinder;
@@ -36,7 +36,9 @@ public class BonesGame : MonoBehaviour
 	public int columns = 3;
 
 	public GameObject playerToken;
-	public GameObject enemyPrefab;
+	public GameObject smallEnemyPrefab;
+	public GameObject mediumEnemyPrefab;
+	public GameObject largeEnemyPrefab;
 
 	private int [,] _patternSmallCross = {{1,0}, {-1,0}, {0,1}, {0,-1}};
 	private int [,] _patternCircleSmall = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
@@ -51,7 +53,12 @@ public class BonesGame : MonoBehaviour
 
 	void Start ()
 	{
+		// init singleton
 		instance = this;
+
+		// cache some stuffs
+		_weaponBox = GameObject.Find ("WeaponBox").GetComponent<WeaponSelection>();
+		_weaponBox.gameObject.SetActive(false);
 
 		CreateBoard();
 
@@ -73,8 +80,15 @@ public class BonesGame : MonoBehaviour
 		_gameState = new PlaceEnemyState();
 	}
 
+	void Update()
+	{
+		_gameState.Update();
+	}
+
 	private void StartGame()
 	{
+		GM.turn = 1;
+
 		// reset Favor, Health and Actions
 		counterFavor.currentValue = 0;
 		counterLife.currentValue = 3;
@@ -90,6 +104,11 @@ public class BonesGame : MonoBehaviour
 	public void OnTokenDropped(Token token, Tile tile)
 	{
 		_gameState.OnTokenDropped(token, tile);
+	}
+
+	public void OnTokenStartDrag(Token token)
+	{
+		_gameState.OnTokenStartDrag(token);
 	}
 
 	public static Tile GetClosestTile(Vector3 location)
@@ -171,8 +190,8 @@ public class BonesGame : MonoBehaviour
 				tiles[c, r] = tile.GetComponent<Tile>();
 				tiles[c, r].column = c;
 				tiles[c, r].row = r;
-				if (r == 0)
-					tiles[c, r].isStartSprite = true;
+
+				tiles[c, r].isStartTile = r == 0;
 			}
 		}
 	}
@@ -215,9 +234,14 @@ public class BonesGame : MonoBehaviour
 			else
 			{
 				Debug.Log("Bypassing the " + newState + " state.");
-				SwitchState(State.PlaceEnemy);
+				SwitchState(State.BeginNewTurn);
 				return;
 			}
+			break;
+		case State.BeginNewTurn:
+			GM.turn ++;
+			_gameState = new BeginNewTurnState();
+			_gameState.instructions = "Beginning turn " + GM.turn;
 			break;
 		}
 
@@ -227,7 +251,7 @@ public class BonesGame : MonoBehaviour
 
 	void OnGUI()
 	{
-		Rect rect;
+		Rect rect = new Rect();
 		if (_gameState.instructions.Length > 0)
 		{
 			rect = new Rect(0, 0, Screen.width, Screen.height * .2f);
@@ -235,6 +259,14 @@ public class BonesGame : MonoBehaviour
 			GUI.skin.label.alignment = TextAnchor.UpperCenter;
 			GUI.Label(rect, _gameState.instructions);
 		}
+
+		rect.x = Screen.width * .78f;
+		rect.y = Screen.height * .02f;
+		rect.width = Screen.width * .2f;
+		rect.height = Screen.height * .2f;
+		if (GUI.Button(rect, "Toggle\nWeapon\nSelection"))
+			_weaponBox.gameObject.SetActive(!_weaponBox.gameObject.activeInHierarchy);
+
 
 		if (_gameState.showConfirmationDialog)
 		{

@@ -27,6 +27,7 @@ public class GameState
 	public virtual void OnEnemyClicked(EnemyToken enemy) {}
 	public virtual void OnTileClicked(Tile tile) {}
 	public virtual void OnTokenDropped(Token token, Tile tile) {}
+	public virtual void OnTokenStartDrag(Token token) {}
 	public virtual void OnDiceRoll(int roll) {}
 	public virtual void OnGUI() {}
 }

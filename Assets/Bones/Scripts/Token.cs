@@ -10,6 +10,8 @@ public class Token : MonoBehaviour
 
 	public GameObject hitEffect;
 
+	public string label = "";
+
 	[HideInInspector]
 	public new bool enabled = true;
 	[HideInInspector]
@@ -65,6 +67,11 @@ public class Token : MonoBehaviour
 	void OnMouseDown() { if (enabled) OnMousePressed(); }
 	void OnMouseUp() { if (enabled) OnMouseReleased(); }
 
+	protected void OnStartDrag()
+	{
+		BonesGame.instance.OnTokenStartDrag(this);
+	}
+
 	protected void OnDropped(Tile newTile)
 	{
 		if (_currentTile != null)
@@ -78,7 +85,29 @@ public class Token : MonoBehaviour
 
 	public void RemoveFromBoard()
 	{
+		if (_currentTile != null)
+			_currentTile.currentToken = null;
 		_currentTile = null;
+	}
+
+	public bool IsNextTo(Token other)
+	{
+		if (other.currentTile.column == currentTile.column)
+			return Mathf.Abs(other.currentTile.row - currentTile.row) == 1f;
+		if (other.currentTile.row == currentTile.row)
+			return Mathf.Abs(other.currentTile.column - currentTile.column) == 1f;
+		return false;
+	}
+
+	void OnGUI()
+	{
+		if (label.Length > 0)
+		{
+			Vector3 location = Camera.main.WorldToScreenPoint(transform.position);
+			GUI.skin.label.fontSize = (int)(Screen.width * .03f);
+			GUI.skin.label.wordWrap = true;
+			GUI.Label(new Rect(location.x- Screen.width * .1f, Screen.height - location.y - Screen.height * .05f, Screen.width * .2f, Screen.height * .1f), label);
+		}
 	}
 
 	virtual protected void OnMouseEnter() {}

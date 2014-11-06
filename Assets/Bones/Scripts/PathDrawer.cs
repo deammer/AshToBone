@@ -73,6 +73,7 @@ public class PathDrawer : MonoBehaviour
 		{
 			bend = new GameObject();
 			bend.name = "Bend_" + _links.Count;
+			bend.transform.parent = transform;
 			bend.AddComponent<SpriteRenderer>();
 			bend.GetComponent<SpriteRenderer>().sprite = arrowBend;
 			_arrowBends.Add(bend);
@@ -106,6 +107,11 @@ public class PathDrawer : MonoBehaviour
 		{
 			Destroy(_links[_links.Count - 1].gameObject);
 			_links.RemoveAt(_links.Count - 1);
+		}
+		while (_arrowBends.Count > 0)
+		{
+			Destroy(_arrowBends[_arrowBends.Count - 1].gameObject);
+			_arrowBends.RemoveAt(_arrowBends.Count - 1);
 		}
 		_arrowHead.SetActive(false);
 	}
