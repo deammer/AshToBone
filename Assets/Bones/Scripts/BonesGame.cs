@@ -8,7 +8,7 @@ public class BonesGame : MonoBehaviour
 	public static BonesGame instance;
 
 	// game flow
-	public enum State { PlayerAction, PlayerMovement, PlaceEnemy, WaitForPlayerAction, EndPlayerTurn, EnemyActions, BeginNewTurn };
+	public enum State { PlayerAction, PlaceEnemy, WaitForPlayerAction, EndPlayerTurn, EnemyActions, BeginNewTurn };
 	private State _state;
 	private GameState _gameState;
 	private ConfirmationDialog _confirmDialog;
@@ -74,6 +74,7 @@ public class BonesGame : MonoBehaviour
 		// position the player token
 		playerToken = (GameObject)Instantiate(playerToken);
 		playerToken.GetComponent<PlayerToken>().MoveToTile(tiles[1, 3]);
+		playerToken.GetComponent<PlayerToken>().weapon = _weaponBox.currentWeapon;
 
 		StartGame();
 
@@ -203,9 +204,6 @@ public class BonesGame : MonoBehaviour
 		case State.PlaceEnemy:
 			_gameState = new PlaceEnemyState();
 			break;
-		case State.PlayerMovement:
-			_gameState = new PlayerMovementState();
-			break;
 		case State.PlayerAction:
 			if (counterActions.currentValue > 0)
 				_gameState = new PlayerActionState();
@@ -260,12 +258,20 @@ public class BonesGame : MonoBehaviour
 			GUI.Label(rect, _gameState.instructions);
 		}
 
-		rect.x = Screen.width * .78f;
-		rect.y = Screen.height * .02f;
-		rect.width = Screen.width * .2f;
-		rect.height = Screen.height * .2f;
-		if (GUI.Button(rect, "Toggle\nWeapon\nSelection"))
-			_weaponBox.gameObject.SetActive(!_weaponBox.gameObject.activeInHierarchy);
+		if (_gameState.canSwitchWeapon)
+		{
+			rect.x = Screen.width * .78f;
+			rect.y = Screen.height * .02f;
+			rect.width = Screen.width * .2f;
+			rect.height = Screen.height * .2f;
+
+			GUI.DrawTexture(rect, playerToken.GetComponent<PlayerToken>().weapon.icon);
+			if (GUI.Button(rect, "Toggle\nWeapon\nSelection"))
+			{
+				_weaponBox.gameObject.SetActive(!_weaponBox.gameObject.activeInHierarchy);
+				_weaponBox.Reset();
+			}
+		}
 
 
 		if (_gameState.showConfirmationDialog)

@@ -84,8 +84,10 @@ MonoBehaviour:
   maxHealth: 2
   currentHealth: 0
   hitEffect: {fileID: 100000, guid: 3f4bfdc3e7070e44db4e8c65a312a26f, type: 2}
+  label: 
   enabled: 1
   draggable: 0
+  weapon: {fileID: 11400000, guid: f050d2e8800947d4da659c5d39aa3e73, type: 2}
 --- !u!212 &21200000
 SpriteRenderer:
   m_ObjectHideFlags: 1

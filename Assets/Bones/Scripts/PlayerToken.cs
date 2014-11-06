@@ -3,10 +3,11 @@ using System.Collections;
 
 public class PlayerToken : Token
 {
+	[HideInInspector]
+	public Weapon weapon;
 
 	override protected void Init()
-	{
-	}
+	{}
 
 	void Update()
 	{

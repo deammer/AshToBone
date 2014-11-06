@@ -29,7 +29,7 @@ public class PlaceEnemyState : GameState
 
 	private void SpawnEnemyWave()
 	{
-		// TODO if the board is full, make the player upgrade a medium or small enemy
+		// TODO if the board is full, GAME OVER
 
 		// otherwise, spawn the wave as normal
 		_enemyTokens = new List<EnemyToken>();
@@ -46,10 +46,6 @@ public class PlaceEnemyState : GameState
 			break;
 		case 2: // medium enemy
 			SpawnEnemy(GM.EnemyType.Medium);
-
-			// testing
-			SpawnEnemy(GM.EnemyType.Small);
-			SpawnEnemy(GM.EnemyType.Small);
 			break;
 		case 3: // 2 small enemies
 			SpawnEnemy(GM.EnemyType.Small);
@@ -307,7 +303,7 @@ public class PlaceEnemyState : GameState
 		}
 
 		// switch the game state
-		BonesGame.instance.SwitchState(BonesGame.State.PlayerMovement);
+		BonesGame.instance.SwitchState(BonesGame.State.PlayerAction);
 	}
 	
 	override protected void CancelDecision()

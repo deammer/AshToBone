@@ -5,6 +5,7 @@ public class GameState
 {
 	public string instructions = "";
 	public string confirmationText = "";
+	public bool canSwitchWeapon = false;
 	public bool showConfirmationDialog = false;
 	protected Tile[,] tiles { get { return BonesGame.tiles; } }
 	protected PlayerToken player { get { return BonesGame.instance.playerToken.GetComponent<PlayerToken>(); } }
