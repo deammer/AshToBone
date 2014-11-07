@@ -31,4 +31,5 @@ public class GameState
 	public virtual void OnTokenStartDrag(Token token) {}
 	public virtual void OnDiceRoll(int roll) {}
 	public virtual void OnGUI() {}
+	public virtual void OnWeaponChanged(Weapon newWeapon) {}
 }

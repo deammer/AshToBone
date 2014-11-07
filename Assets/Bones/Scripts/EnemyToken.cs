@@ -5,24 +5,24 @@ public class EnemyToken : Token
 {
 	public int damage = 1;
 
-	void Update()
+	public override void Update ()
 	{
-		if (BonesGame.tokenBeingDragged == this)
-		{
-			Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			location.z = 0;
-			transform.position = location;
-		}
+		base.Update ();
+		
+		spriteRenderer.color = enabled ? new Color(1,1,1) : new Color(1f, 1f, 1f, .5f);
+		label = enabled ? "Enabled" : "Disabled";
 	}
 
 	override protected void OnMouseEnter()
 	{
-		spriteRenderer.color = Color.red;
+		base.OnMouseEnter();
+		transform.localScale = new Vector3(1.2f, 1.2f, 1f);
 	}
 	
 	override protected void OnMouseExit()
 	{
-		spriteRenderer.color = Color.white;
+		base.OnMouseExit();
+		transform.localScale = new Vector3(1f, 1f, 1f);
 	}
 	
 	override protected void OnMousePressed()
@@ -30,7 +30,6 @@ public class EnemyToken : Token
 		if (draggable)
 		{
 			spriteRenderer.color = Color.white;
-			transform.localScale = new Vector3(1.2f, 1.2f, 1f);
 			BonesGame.tokenBeingDragged = this;
 			_lastPosition = transform.position;
 			OnStartDrag();
@@ -42,7 +41,6 @@ public class EnemyToken : Token
 		if (draggable)
 		{
 			spriteRenderer.color = Color.red;
-			transform.localScale = new Vector3(1f, 1f, 1f);
 			BonesGame.tokenBeingDragged = null;
 			
 			Tile newTile = BonesGame.GetTileAt(transform.position);
@@ -66,5 +64,10 @@ public class EnemyToken : Token
 
 		// return true if we're adjacent to the player (diagonal included)
 		return x - 1 <= playerX && x + 1 >= playerX && y - 1 <= playerY && y + 1 >= playerY;
+	}
+
+	void OnDestroy()
+	{
+		_currentTile = null;
 	}
 }

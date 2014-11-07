@@ -196,10 +196,7 @@ public class PlaceEnemyState : GameState
 		foreach (EnemyToken token in _enemyTokens)
 		{	
 			if (token.currentTile != null)
-			{
 				placedTokens.Add(token);
-				token.label = "Placed token";
-			}
 		}
 
 		// for each token we've placed, check that they're adjacent to a token placed before this turn
@@ -220,7 +217,6 @@ public class PlaceEnemyState : GameState
 				if (placedTokens.IndexOf(adjacentToken as EnemyToken) == -1)
 				{
 					legalTokens.Add(token); // it is legal
-					token.label = "This token is legal!";
 					found = true;
 				}
 			}
@@ -279,10 +275,8 @@ public class PlaceEnemyState : GameState
 		while (lastNumIllegal != numIllegal);
 		
 		// remove the illegal tokens from the board
-		Debug.Log("Removing " + illegalTokens.Count + " illegal tokens");
 		foreach (EnemyToken enemy in illegalTokens)
 		{
-			enemy.label = "This token was illegal!";
 			enemy.RemoveFromBoard();
 			enemy.transform.position = new Vector3(-7.8f, 5.5f - _enemyTokens.IndexOf(enemy) * 1f, 0);
 		}
@@ -295,6 +289,7 @@ public class PlaceEnemyState : GameState
 
 	override public void OnTokenDropped (Token token, Tile tile)
 	{
+		// determine whether to show the confirmation dialog
 		bool show = true;
 
 		if (!_startTilesEnabled)

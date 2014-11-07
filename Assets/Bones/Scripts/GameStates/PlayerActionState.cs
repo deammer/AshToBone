@@ -11,12 +11,14 @@ public class PlayerActionState : GameState
 
 	// actions
 	private EnemyToken _selectedEnemy;
+	private List<EnemyToken> _enemiesInRange;
 
 	public PlayerActionState()
 	{
 		instructions = "Move and/or attack!";
 		confirmationText = "Confirm move?";
 		_pathDrawer = BonesGame.instance.pathDrawer;
+		_selectedEnemy = null;
 		canSwitchWeapon = true;
 
 		// disable all the tiles
@@ -25,9 +27,8 @@ public class PlayerActionState : GameState
 		// display the tiles we can move to
 		DisplayMovementTiles();
 
-		// enable all the enemies
-		foreach (EnemyToken enemy in BonesGame.instance.enemies)
-			enemy.enabled = true;
+		// enable/update the tiles for the enemies we can attack
+		UpdateEnemiesWithinRange();
 	}
 
 	#region Movement
@@ -80,11 +81,11 @@ public class PlayerActionState : GameState
 		// clear the pathdrawer
 		_pathDrawer.Clear();
 
-		if (BonesGame.instance.counterActions.currentValue > 0)
+		if (!AreWeDoneWithThisState())
+		{
 			DisplayMovementTiles();
-
-		// check the number of actions remaining
-		CheckForNextState();
+			UpdateEnemiesWithinRange();
+		}
 	}
 
 	// cancel the planned move
@@ -101,22 +102,29 @@ public class PlayerActionState : GameState
 	{
 		// setup the tiles we can move to
 		Tile currentTile = player.currentTile;
-
+		
 		// setup the pathfinder
 		_pathfinder = new Pathfinder(tiles);
 		currentTile.SetState(Tile.TileState.Green);
 		currentTile.enabled = true;
+
 		// highlight the tiles we can move to
 		List<Tile> path;
+		int maxLength = BonesGame.instance.counterActions.currentValue;
 		foreach (Tile tile in tiles)
 		{
 			if (tile.currentToken == null && tile != currentTile)
 			{
 				path = _pathfinder.FindPath(currentTile, tile);
-				if (path.Count > 0 && path.Count <= BonesGame.instance.counterActions.currentValue)
+				if (path.Count > 0 && path.Count <= maxLength)
 				{
 					tile.SetState(Tile.TileState.Green);
 					tile.enabled = true;
+				}
+				else
+				{
+					tile.SetState(Tile.TileState.Normal);
+					tile.enabled = false;
 				}
 			}
 		}
@@ -139,6 +147,7 @@ public class PlayerActionState : GameState
 			{
 				diceWindow.gameObject.SetActive(false);
 				_selectedEnemy = null;
+				GM.freezeTiles = false;
 				return;
 			}
 		}
@@ -149,19 +158,26 @@ public class PlayerActionState : GameState
 		diceWindow.gameObject.SetActive(true);
 		diceWindow.SetBackground(DiceRollWindow.BackgroundStyle.Attack);
 		diceWindow.SetLocation(enemy.transform.position);
+
+		// freeze the tiles
+		GM.freezeTiles = true;
 	}
 
 	override public void OnDiceRoll(int roll)
 	{
 		if (_selectedEnemy != null)
 		{
+			// spend an action
+			BonesGame.instance.counterActions.currentValue --;
+
 			if (roll >= 4)
 			{
 				_selectedEnemy.currentHealth -= player.weapon.damage;
 				
 				// show a HIT effect
 				GameObject.Instantiate(_selectedEnemy.hitEffect, _selectedEnemy.transform.position, Quaternion.identity);
-				
+
+				// if the enemy deaded
 				if (_selectedEnemy.currentHealth <= 0)
 				{
 					// destroy that punk
@@ -169,28 +185,55 @@ public class PlayerActionState : GameState
 					
 					// remove from the cache
 					BonesGame.instance.enemies.Remove(_selectedEnemy);
+					_selectedEnemy.currentTile.SetState(Tile.TileState.Normal);
+					_selectedEnemy.currentTile.currentToken = null;
 					GameObject.Destroy(_selectedEnemy.gameObject);
 					_selectedEnemy = null;
-					
-					// hide the roll window
+
+
+					// hide the dice roll window
 					diceWindow.gameObject.SetActive(false);
+
+					// enable the tiles
+					GM.freezeTiles = false;
 				}
 			}
-			
-			// spend an action
-			BonesGame.instance.counterActions.currentValue --;
-			
-			CheckForNextState();
+
+			if (!AreWeDoneWithThisState())
+				DisplayMovementTiles(); // we lost an action, we can't move as far
+		}
+	}
+
+	private void UpdateEnemiesWithinRange()
+	{
+		_enemiesInRange = player.GetEnemiesInRange();
+
+		foreach (EnemyToken enemy in BonesGame.instance.enemies)
+			enemy.enabled = false;
+		foreach (EnemyToken enemy in _enemiesInRange)
+		{
+			enemy.currentTile.SetState(Tile.TileState.Red);
+			enemy.enabled = true;
 		}
 	}
 	#endregion Attacking
 
-	private void CheckForNextState()
+	public override void OnWeaponChanged (Weapon newWeapon)
+	{
+		base.OnWeaponChanged (newWeapon);
+
+		// since the weapon changed, we lost an action point
+		if (!AreWeDoneWithThisState())
+		{
+			DisplayMovementTiles();
+			UpdateEnemiesWithinRange();
+		}
+	}
+
+	private bool AreWeDoneWithThisState()
 	{
 		if (BonesGame.instance.counterActions.currentValue <= 0)
 		{
-			BonesGame.instance.SwitchState(BonesGame.State.EndPlayerTurn);
-			
 			diceWindow.gameObject.SetActive(false);
 			
 			if (_selectedEnemy != null)
@@ -198,6 +241,18 @@ public class PlayerActionState : GameState
 			
 			foreach (EnemyToken enemy in BonesGame.instance.enemies)
 				enemy.enabled = false;
+
+			foreach (Tile tile in tiles)
+			{
+				tile.enabled = false;
+				tile.SetState(Tile.TileState.Normal);
+			}
+
+			BonesGame.instance.SwitchState(BonesGame.State.EndPlayerTurn);
+
+			return true;
 		}
+
+		return false;
 	}
 }

@@ -50,6 +50,19 @@ public class BonesGame : MonoBehaviour
 	public void TileEntered(Tile tile) {}
 	public void DiceRolled(int roll) { _gameState.OnDiceRoll(roll); }
 	public void OnEnemyClicked(EnemyToken token) { _gameState.OnEnemyClicked(token); }
+	public void OnWeaponChanged(Weapon newWeapon)
+	{
+		counterActions.currentValue --;
+
+		if (counterActions.currentValue <= 0)
+		{
+			// exit out of the Weapon Selection UI
+			Camera.main.transform.position = _originalCameraPos;
+			_weaponBox.gameObject.SetActive(false);
+		}
+
+		_gameState.OnWeaponChanged(newWeapon);
+	}
 
 	private Vector3 _originalCameraPos;
 
@@ -174,6 +187,8 @@ public class BonesGame : MonoBehaviour
 			for (int r = 0; r < rows; r++)
 			{
 				tiles[c, r].enabled = enabled;
+				if (!enabled)
+					tiles[c, r].SetState(Tile.TileState.Normal);
 			}
 		}
 	}
@@ -269,7 +284,7 @@ public class BonesGame : MonoBehaviour
 			rect.height = Screen.height * .2f;
 
 			GUI.DrawTexture(rect, playerToken.GetComponent<PlayerToken>().weapon.icon);
-			if (GUI.Button(rect, "Toggle\nWeapon\nSelection"))
+			if (GUI.Button(rect, "Show/Hide\nWeapon\nSelection"))
 			{
 				if (Camera.main.transform.position == _originalCameraPos)
 				{

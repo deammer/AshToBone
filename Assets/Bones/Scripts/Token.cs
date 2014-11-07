@@ -44,7 +44,7 @@ public class Token : MonoBehaviour
 
 	protected virtual void Init() {}
 	
-	void Update ()
+	public virtual void Update ()
 	{
 		Vector3 mouseLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		bool over = spriteRenderer.bounds.Contains(new Vector3(mouseLocation.x, mouseLocation.y, transform.position.z));
@@ -55,6 +55,13 @@ public class Token : MonoBehaviour
 				OnMouseEnter();
 			else if (_mouseOver && !over)
 				OnMouseExit();
+		}
+
+		if (BonesGame.tokenBeingDragged == this)
+		{
+			Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			location.z = 0;
+			transform.position = location;
 		}
 	}
 
@@ -110,8 +117,8 @@ public class Token : MonoBehaviour
 		}
 	}
 
-	virtual protected void OnMouseEnter() {}
-	virtual protected void OnMouseExit() {}
+	virtual protected void OnMouseEnter() { _mouseOver = true; }
+	virtual protected void OnMouseExit() { _mouseOver = false; }
 	virtual protected void OnMousePressed() {}
 	virtual protected void OnMouseReleased() {}
 }

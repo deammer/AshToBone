@@ -11,9 +11,9 @@ public class Weapon : MonoBehaviour
 
 	private SpriteRenderer _renderer;
 
-	private static int [,] _patternSmallCross = {{1,0}, {-1,0}, {0,1}, {0,-1}};
-	private static int [,] _patternLargeCross = {{1,0}, {-1,0}, {0,1}, {0,-1}, {2,0}, {-2,0}, {0,2}, {0,-2}};
-	private static int [,] _patternCircleSmall = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+	public static int [,] patternSmallCross = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+	public static int [,] patternLargeCross = {{1,0}, {-1,0}, {0,1}, {0,-1}, {2,0}, {-2,0}, {0,2}, {0,-2}};
+	public static int [,] patternCircleSmall = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
 
 	void Start ()
 	{
@@ -22,11 +22,10 @@ public class Weapon : MonoBehaviour
 	
 	void Update ()
 	{
-		
-	}
+		Vector3 mouseLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		bool over = _renderer.bounds.Contains(new Vector3(mouseLocation.x, mouseLocation.y, transform.position.z));
 
-	void OnMouseUp()
-	{
-		transform.parent.gameObject.SendMessage("WeaponSelected", this, SendMessageOptions.RequireReceiver);
+		if (Input.GetMouseButtonUp(0) && over)
+			transform.parent.gameObject.SendMessage("WeaponSelected", this, SendMessageOptions.RequireReceiver);
 	}
 }

@@ -42,7 +42,7 @@ public class WeaponSelection : MonoBehaviour
 			if (GUI.Button(rect, "Switch to " + _selection.name + "!\nCost: 1 Action"))
 			{
 				BonesGame.instance.playerToken.GetComponent<PlayerToken>().weapon = _selection;
-				BonesGame.instance.counterActions.currentValue --;
+				BonesGame.instance.OnWeaponChanged(_selection);
 				_playerWeapon = _selection;
 			}
 		}

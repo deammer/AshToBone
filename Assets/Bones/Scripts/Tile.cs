@@ -25,8 +25,7 @@ public class Tile : MonoBehaviour
 	private Color _disabledColor = Color.gray;
 	
 	private bool _enabled = true;
-	public new bool enabled { get { return _enabled; }
-		set { _enabled = value; if (!_enabled) SetState(TileState.Normal); } }
+	public new bool enabled { get { return _enabled; } set { _enabled = value; } }
 
 	[HideInInspector]
 	public bool highlighted = false;
@@ -68,6 +67,9 @@ public class Tile : MonoBehaviour
 
 	void Update ()
 	{
+		if (GM.freezeTiles)
+			return;
+
 		Vector3 mouseLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		bool over = _renderer.bounds.Contains(new Vector3(mouseLocation.x, mouseLocation.y, transform.position.z));
 
@@ -99,10 +101,7 @@ public class Tile : MonoBehaviour
 				_mouseIsOver = false;
 			}
 
-			if (_enabled)
-				_renderer.color = _originalColor;
-//			else
-//				_renderer.color = _disabledColor;
+			_renderer.color = _originalColor;
 		}
 	}
 
