@@ -27,17 +27,17 @@ public class ConfirmationDialog
 	
 	public void Render()
 	{
-		float width = 100f;
-		float height = 90f;
+		float width = 160f;
+		float height = 164f;
 
 		float x = Screen.width - width;
 
 		GUI.Box(new Rect(x, (Screen.height - height) * .5f, width, height), text);
 
-		if(GUI.Button(new Rect(x + 5f, (Screen.height - height) * .5f + 20, width - 10f, 30f), "Yes"))
+		if(GUI.Button(new Rect(x + 10f, (Screen.height - height) * .5f + 68, width - 20f, 40f), "Yes"))
 			callback(Decision.Confirm);
 		
-		if(GUI.Button(new Rect(x + 5f, (Screen.height - height) * .5f + 55, width - 10f, 30f), "No"))
+		if(GUI.Button(new Rect(x + 10f, (Screen.height - height) * .5f + 113, width - 20f, 40f), "No"))
 			callback(Decision.Cancel);
 	}
 }

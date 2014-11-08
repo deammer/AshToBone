@@ -12,8 +12,9 @@ public class Token : MonoBehaviour
 
 	public string label = "";
 
-	[HideInInspector]
-	public new bool enabled = true;
+	private bool _enabled = true;
+	public new bool enabled { get { return _enabled; }
+		set { _enabled = value; if (_enabled) OnEnabled(); else OnDisabled(); } }
 	[HideInInspector]
 	public bool draggable = false;
 
@@ -121,4 +122,6 @@ public class Token : MonoBehaviour
 	virtual protected void OnMouseExit() { _mouseOver = false; }
 	virtual protected void OnMousePressed() {}
 	virtual protected void OnMouseReleased() {}
+	virtual protected void OnEnabled() {}
+	virtual protected void OnDisabled() {}
 }

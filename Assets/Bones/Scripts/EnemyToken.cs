@@ -5,12 +5,16 @@ public class EnemyToken : Token
 {
 	public int damage = 1;
 
-	public override void Update ()
+	protected override void OnEnabled ()
 	{
-		base.Update ();
-		
-		spriteRenderer.color = enabled ? new Color(1,1,1) : new Color(1f, 1f, 1f, .5f);
-		label = enabled ? "Enabled" : "Disabled";
+		base.OnEnabled ();
+		spriteRenderer.color = new Color(1,1,1);
+	}
+
+	protected override void OnDisabled ()
+	{
+		base.OnDisabled ();
+		spriteRenderer.color = new Color(1f, 1f, 1f, .5f);
 	}
 
 	override protected void OnMouseEnter()
@@ -29,7 +33,6 @@ public class EnemyToken : Token
 	{
 		if (draggable)
 		{
-			spriteRenderer.color = Color.white;
 			BonesGame.tokenBeingDragged = this;
 			_lastPosition = transform.position;
 			OnStartDrag();
@@ -40,7 +43,6 @@ public class EnemyToken : Token
 	{
 		if (draggable)
 		{
-			spriteRenderer.color = Color.red;
 			BonesGame.tokenBeingDragged = null;
 			
 			Tile newTile = BonesGame.GetTileAt(transform.position);

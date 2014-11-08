@@ -18,6 +18,7 @@ public class BonesGame : MonoBehaviour
 	public Counter counterFavor;
 	public Counter counterActions;
 	public GameObject diceRollWindow;
+	public GUISkin skin;
 	private WeaponSelection _weaponBox;
 
 	// pathfinding
@@ -75,6 +76,7 @@ public class BonesGame : MonoBehaviour
 		_weaponBox = GameObject.Find ("WeaponBox").GetComponent<WeaponSelection>();
 		_weaponBox.gameObject.SetActive(false);
 		_originalCameraPos = Camera.main.transform.position;
+		GM.skin = skin;
 
 		CreateBoard();
 
@@ -267,6 +269,8 @@ public class BonesGame : MonoBehaviour
 
 	void OnGUI()
 	{
+		GUI.skin = GM.skin;
+
 		Rect rect = new Rect();
 		if (_gameState.instructions.Length > 0)
 		{
@@ -281,7 +285,7 @@ public class BonesGame : MonoBehaviour
 			rect.x = Screen.width * .78f;
 			rect.y = Screen.height * .02f;
 			rect.width = Screen.width * .2f;
-			rect.height = Screen.height * .2f;
+			rect.height = Screen.height * .3f;
 
 			GUI.DrawTexture(rect, playerToken.GetComponent<PlayerToken>().weapon.icon);
 			if (GUI.Button(rect, "Show/Hide\nWeapon\nSelection"))

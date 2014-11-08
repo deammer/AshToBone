@@ -12,6 +12,8 @@ public class Counter : MonoBehaviour
 
 	void OnGUI()
 	{
+		GUI.skin = GM.skin;
+
 		float width = renderer.bounds.extents.x;
 		Vector3 topLeft = Camera.main.WorldToScreenPoint(new Vector3(transform.position.x - width, -transform.position.y - width, 0));
 		Vector3 bottomRight = Camera.main.WorldToScreenPoint(new Vector3(transform.position.x + width, - transform.position.y + width, 0));
