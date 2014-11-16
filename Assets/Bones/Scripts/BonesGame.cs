@@ -19,7 +19,7 @@ public class BonesGame : MonoBehaviour
 	public Counter counterActions;
 	public GameObject diceRollWindow;
 	public GUISkin skin;
-	private WeaponSelection _weaponBox;
+	public GameObject weaponUI;
 
 	// pathfinding
 	private Pathfinder _pathfinder;
@@ -28,6 +28,7 @@ public class BonesGame : MonoBehaviour
 	public PathDrawer pathDrawer;
 
 	// tokens
+	[HideInInspector]
 	public List<EnemyToken> enemies = new List<EnemyToken>();
 
 	public static Token tokenBeingDragged = null;
@@ -51,6 +52,25 @@ public class BonesGame : MonoBehaviour
 	public void TileEntered(Tile tile) {}
 	public void DiceRolled(int roll) { _gameState.OnDiceRoll(roll); }
 	public void OnEnemyClicked(EnemyToken token) { _gameState.OnEnemyClicked(token); }
+
+	#region UI
+	public void ToggleWeaponUI() { weaponUI.SetActive(!weaponUI.activeInHierarchy); }
+	public void ToggleShieldUI() { weaponUI.SetActive(!weaponUI.activeInHierarchy); }
+	public void ToggleAuraUI() { weaponUI.SetActive(!weaponUI.activeInHierarchy); }
+	#endregion
+
+	# region WeaponSelection
+	public Weapon [] weapons;
+	private Weapon _selectedWeapon;
+	public void OnWeaponSelected(Weapon newWeapon)
+	{
+		_selectedWeapon = newWeapon;
+		
+		// move the hand
+//		Vector3 handLocation = handToken.transform.position;
+//		handLocation.y = weapon.transform.position.y;
+//		handToken.transform.position = handLocation;
+	}
 	public void OnWeaponChanged(Weapon newWeapon)
 	{
 		counterActions.currentValue --;
@@ -59,11 +79,12 @@ public class BonesGame : MonoBehaviour
 		{
 			// exit out of the Weapon Selection UI
 			Camera.main.transform.position = _originalCameraPos;
-			_weaponBox.gameObject.SetActive(false);
+			weaponUI.gameObject.SetActive(false);
 		}
 
 		_gameState.OnWeaponChanged(newWeapon);
 	}
+	#endregion
 
 	private Vector3 _originalCameraPos;
 
@@ -73,9 +94,9 @@ public class BonesGame : MonoBehaviour
 		instance = this;
 
 		// cache some stuffs
-		_weaponBox = GameObject.Find ("WeaponBox").GetComponent<WeaponSelection>();
-		_weaponBox.gameObject.SetActive(false);
+		weaponUI.SetActive(false);
 		_originalCameraPos = Camera.main.transform.position;
+		_selectedWeapon = weapons[0];
 		GM.skin = skin;
 
 		CreateBoard();
@@ -92,7 +113,7 @@ public class BonesGame : MonoBehaviour
 		// position the player token
 		playerToken = (GameObject)Instantiate(playerToken);
 		playerToken.GetComponent<PlayerToken>().MoveToTile(tiles[1, 3]);
-		playerToken.GetComponent<PlayerToken>().weapon = _weaponBox.currentWeapon;
+		playerToken.GetComponent<PlayerToken>().weapon = _selectedWeapon;
 
 		StartGame();
 
@@ -292,17 +313,16 @@ public class BonesGame : MonoBehaviour
 			{
 				if (Camera.main.transform.position == _originalCameraPos)
 				{
-					_weaponBox.Reset();
 					Vector3 position = _originalCameraPos;
-					position.x = _weaponBox.transform.position.x;
-					position.y = _weaponBox.transform.position.y;
+					position.x = weaponUI.transform.position.x;
+					position.y = weaponUI.transform.position.y;
 					Camera.main.transform.position = position;
-					_weaponBox.gameObject.SetActive(true);
+					weaponUI.gameObject.SetActive(true);
 				}
 				else
 				{
 					Camera.main.transform.position = _originalCameraPos;
-					_weaponBox.gameObject.SetActive(false);
+					weaponUI.gameObject.SetActive(false);
 				}
 			}
 		}
