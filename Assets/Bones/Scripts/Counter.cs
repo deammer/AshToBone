@@ -1,25 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.UI;
 public class Counter : MonoBehaviour
 {
 	public string text = "";
+	
+	private int _currentValue;
+	public int currentValue {
+		set { _currentValue = value; UpdateText(); }
+		get { return _currentValue; } }
 
-	[HideInInspector]
-	public int currentValue;
-	[HideInInspector]
-	public int maxValue;
+	private int _maxValue;
+	public int maxValue {
+		set { _maxValue = value; UpdateText(); }
+		get { return _maxValue; } }
 
-	void OnGUI()
+
+	private Text _text;
+
+	void Awake()
 	{
-		GUI.skin = GM.skin;
+		_text = transform.FindChild("Text").GetComponent<Text>();
+	}
 
-		float width = renderer.bounds.extents.x;
-		Vector3 topLeft = Camera.main.WorldToScreenPoint(new Vector3(transform.position.x - width, -transform.position.y - width, 0));
-		Vector3 bottomRight = Camera.main.WorldToScreenPoint(new Vector3(transform.position.x + width, - transform.position.y + width, 0));
-
-		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-		GUI.skin.label.fontSize = 32;
-		GUI.Label(new Rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, Mathf.Abs(topLeft.y - bottomRight.y)), text + "\n" + currentValue + "/" + maxValue);
+	private void UpdateText()
+	{
+		_text.text = text + _currentValue + "/" +  _maxValue;
 	}
 }

@@ -296,35 +296,14 @@ public class BonesGame : MonoBehaviour
 		if (_gameState.instructions.Length > 0)
 		{
 			rect = new Rect(0, 0, Screen.width, Screen.height * .2f);
-			GUI.skin.label.fontSize = 20;
+			GUI.skin.label.fontSize = (int)(Screen.width * .05f);
 			GUI.skin.label.alignment = TextAnchor.UpperCenter;
 			GUI.Label(rect, _gameState.instructions);
 		}
 
 		if (_gameState.canSwitchWeapon)
 		{
-			rect.x = Screen.width * .78f;
-			rect.y = Screen.height * .02f;
-			rect.width = Screen.width * .2f;
-			rect.height = Screen.height * .3f;
-
-			GUI.DrawTexture(rect, playerToken.GetComponent<PlayerToken>().weapon.icon);
-			if (GUI.Button(rect, "Show/Hide\nWeapon\nSelection"))
-			{
-				if (Camera.main.transform.position == _originalCameraPos)
-				{
-					Vector3 position = _originalCameraPos;
-					position.x = weaponUI.transform.position.x;
-					position.y = weaponUI.transform.position.y;
-					Camera.main.transform.position = position;
-					weaponUI.gameObject.SetActive(true);
-				}
-				else
-				{
-					Camera.main.transform.position = _originalCameraPos;
-					weaponUI.gameObject.SetActive(false);
-				}
-			}
+			// TODO
 		}
 
 

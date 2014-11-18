@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 12001, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: BonesSkin
   m_EditorClassIdentifier: 
-  m_Font: {fileID: 12800000, guid: 8e45fc350f6507f43b76cc924e45a126, type: 3}
+  m_Font: {fileID: 12800000, guid: cd10e91fc78efde4d8753be342e30fe3, type: 3}
   m_box:
     m_Name: box
     m_Normal:
@@ -60,7 +60,7 @@ MonoBehaviour:
       m_Bottom: 0
     m_Font: {fileID: 0}
     m_FontSize: 23
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_Alignment: 1
     m_WordWrap: 1
     m_RichText: 1
@@ -237,7 +237,7 @@ MonoBehaviour:
       m_Bottom: 0
     m_Font: {fileID: 0}
     m_FontSize: 32
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_Alignment: 4
     m_WordWrap: 1
     m_RichText: 1
